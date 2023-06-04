@@ -1,10 +1,9 @@
-import { Upload, Page } from './components';
+import { Upload } from './components';
 import Styled from 'styled-components';
 
 function App() {
 	return (
 		<Container>
-			<Page />
 			<Upload />
 		</Container>
 	);

@@ -1,66 +1,88 @@
-from flask import Flask, flash, request, redirect, url_for, send_from_directory, jsonify
+import requests
+from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
-import os
-import gitext
 from flask_cors import CORS
-import json
-import check
+import extract
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        print(f)
-        f.save(secure_filename('file.txt'))
-        Result = []
-        check.loopAllFiles(Result)
-        print(Result)
-        return jsonify({'res': Result, 'status': True})
-    return jsonify({'res': 'Failed To Upload', 'status': False})
+def read_webpage(url):
+    try:
+        response = requests.get(url, allow_redirects=True, stream=True)
+        response.raise_for_status()
+        content = response.text
+        return content
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return e
 
 
-@app.route('/code', methods=['GET', 'POST'])
-def code():
-    data = request.data.decode('utf-8')
-    codeData = json.loads(data)['code']
-    print(codeData)
-    if codeData != '':
-        file = open('file.txt', 'w')
-        file.write(codeData)
-        file.close()
-        Result = []
-        check.loopAllFiles(Result)
-        print(Result)
-        return jsonify({'res': Result, 'status': True})
-    return jsonify({"sucess": False, 'message': "fail"})
+def data():
+    try:
+        images = extract.extract_images()
+        links = extract.extract_links()
+        text = extract.extract_text()
+        script = extract.extract_javascript()
+        graph = extract.create_html_tree()
+        return jsonify({
+            "success": True,
+            "message": "done",
+            "images": images,
+            "links": links,
+            "text": text,
+            "script": script,
+            "graph": graph
+        })
+    except Exception:
+        print("Error occurred while extracting")
+        return jsonify({
+            "success": False,
+            "message": "Error occurred while extracting"
+        })
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def display():
-    return "welcome to detecto"
+    try:
+        return render_template('index.html')
+    except Exception:
+        print("Error occurred while rendering")
+        return Exception
 
 
-@app.route('/github', methods=["POST", "GET"])
-def Github():
-    data = request.data.decode('utf-8')
-    repo = json.loads(data)['repo']
-    print(repo)
-    if repo != '':
-        gitext.search(repo)
-        return jsonify({"sucess": True, 'message': "done"})
-    return jsonify({"sucess": False, 'message': "fail"})
+@app.route('/api/file', methods=['POST'])
+def uploadFile():
+    try:
+        if request.method == 'POST':
+            f = request.files['file']
+            print(f)
+            f.save("templates/"+secure_filename('index.html'))
+            print("file saved")
+            return data()
+        else:
+            raise Exception
+    except Exception:
+        return jsonify({"success": False, 'message': "fail"})
 
 
-@app.route('/result', methods=['POST', 'GET'])
-def previous():
-    Result = []
-    check.loopAllFiles(Result)
-    print(Result)
-    return jsonify({'res': Result, 'status': True})
+@app.route('/api/link', methods=['POST'])
+def receiveLink():
+    try:
+        if request.method == 'POST':
+            link = request.form['link']
+            content = read_webpage(link)
+            # print(content)
+            file = open("templates/index.html", 'w', encoding="utf8")
+            file.write(content)
+            return data()
+        else:
+            raise Exception
+    except Exception:
+        print("Failed to save file")
+        return jsonify({"success": False, 'message': "fail"})
 
+# data()
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)

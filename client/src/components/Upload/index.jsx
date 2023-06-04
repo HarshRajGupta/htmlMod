@@ -1,9 +1,21 @@
 import { useRef, useCallback } from 'react';
 import Styled from 'styled-components';
 import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
 
 function FileUpload() {
 	const onDrop = useCallback((acceptedFiles) => {
+		const formData = new FormData();
+		formData.append('file', acceptedFiles[0]);
+		axios
+			.post('http://127.0.0.1:8000/api/file', formData)
+			.then((res) => {
+				console.log(res);
+				localStorage.setItem('result', JSON.stringify(res.data.res));
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 		console.log(acceptedFiles);
 	}, []);
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -46,6 +58,17 @@ function SiteLink() {
 	const linkRef = useRef(null);
 	function handleSubmit(e) {
 		e.preventDefault();
+		const formData = new FormData();
+		formData.append('link', linkRef.current.value);
+		axios
+			.post('http://127.0.0.1:8000/api/link', formData)
+			.then((res) => {
+				console.log(res);
+				localStorage.setItem('result', JSON.stringify(res.data.res));
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 		console.log(linkRef.current.value);
 	}
 	return (
