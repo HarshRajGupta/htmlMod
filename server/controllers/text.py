@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 
 
-def extract_text():
+def extract_text(path):
     try:
-        file = open("templates/index.html", encoding="utf8")
+        file = open(path, encoding="utf8")
         html_content = file.read()
         soup = BeautifulSoup(html_content, 'html.parser')
         text = soup.get_text()
@@ -16,10 +16,11 @@ def extract_text():
                     new_line.append(i)
             if len(new_line):
                 new_text_array.append(new_line)
+        file.close()
         return new_text_array
     except:
         print("Error parsing text")
         return None
 
 
-extract_text()
+# print(extract_text("../templates/index.html"))

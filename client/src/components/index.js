@@ -1,7 +1,10 @@
 import Data from './Data';
-import Image from './Image';
+import Images from './Images';
 import Links from './Links';
 import Page from './Page';
 import Upload from './Upload';
+import Graph from './Graph';
+import Script from './Script';
+import Seo from './Seo';
 
-export { Data, Image, Links, Page, Upload };
+export { Data, Images, Links, Page, Upload, Graph, Script, Seo };

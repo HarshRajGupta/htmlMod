@@ -1,22 +1,47 @@
-import { useRef, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { useRef, useCallback, useState, memo } from 'react';
 import Styled from 'styled-components';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
-function FileUpload() {
+function FileUpload({
+	setLinks,
+	setImages,
+	setSubmitted,
+	setData,
+	setGraph,
+	setCode,
+	setGood,
+	setBad,
+	setKeywords,
+	setLoading,
+}) {
 	const onDrop = useCallback((acceptedFiles) => {
+		toast.info('Uploading File');
+		setLoading(true);
 		const formData = new FormData();
 		formData.append('file', acceptedFiles[0]);
 		axios
-			.post('http://127.0.0.1:8000/api/file', formData)
+			.post('/file', formData)
 			.then((res) => {
 				console.log(res);
-				localStorage.setItem('result', JSON.stringify(res.data.res));
+				setLinks(res.data.links);
+				setImages(res.data.images);
+				setData(res.data.text);
+				setGraph(res.data.graph);
+				setCode(res.data.script);
+				setGood(res.data.good);
+				setBad(res.data.bad);
+				setKeywords(res.data.keywords);
+				toast.success('File Uploaded Successfully');
+				setSubmitted(true);
 			})
 			.catch((err) => {
-				console.log(err);
+				console.error(err);
 			});
-		console.log(acceptedFiles);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
@@ -54,22 +79,43 @@ function FileUpload() {
 	);
 }
 
-function SiteLink() {
+function SiteLink({
+	setLinks,
+	setImages,
+	setSubmitted,
+	setData,
+	setGraph,
+	setCode,
+	setGood,
+	setBad,
+	setKeywords,
+	setLoading,
+}) {
 	const linkRef = useRef(null);
 	function handleSubmit(e) {
 		e.preventDefault();
+		toast.info('Analyzing Site');
+		setLoading(true);
 		const formData = new FormData();
 		formData.append('link', linkRef.current.value);
 		axios
-			.post('http://127.0.0.1:8000/api/link', formData)
+			.post('/link', formData)
 			.then((res) => {
 				console.log(res);
-				localStorage.setItem('result', JSON.stringify(res.data.res));
+				setLinks(res.data.links);
+				setImages(res.data.images);
+				setData(res.data.text);
+				setGraph(res.data.graph);
+				setCode(res.data.script);
+				setGood(res.data.good);
+				setBad(res.data.bad);
+				setKeywords(res.data.keywords);
+				toast.success('Analysis Successful');
+				setSubmitted(true);
 			})
 			.catch((err) => {
-				console.log(err);
+				console.error(err);
 			});
-		console.log(linkRef.current.value);
 	}
 	return (
 		<Container>
@@ -90,20 +136,92 @@ function SiteLink() {
 	);
 }
 
-function Upload() {
+function Upload({
+	setLinks,
+	setImages,
+	setSubmitted,
+	setData,
+	setGraph,
+	setCode,
+	setGood,
+	setBad,
+	setKeywords,
+}) {
+	const [loading, setLoading] = useState(false);
+	if (loading) return <h1>Loading...</h1>;
 	return (
 		<>
-			<FileUpload />
-			<SiteLink />
+			<FileUpload
+				setLinks={setLinks}
+				setImages={setImages}
+				setSubmitted={setSubmitted}
+				setData={setData}
+				setGraph={setGraph}
+				setCode={setCode}
+				setGood={setGood}
+				setBad={setBad}
+				setKeywords={setKeywords}
+				setLoading={setLoading}
+			/>
+			<SiteLink
+				setLinks={setLinks}
+				setImages={setImages}
+				setSubmitted={setSubmitted}
+				setData={setData}
+				setGraph={setGraph}
+				setCode={setCode}
+				setGood={setGood}
+				setBad={setBad}
+				setKeywords={setKeywords}
+				setLoading={setLoading}
+			/>
 		</>
 	);
 }
+
+FileUpload.propTypes = {
+	setLinks: PropTypes.func.isRequired,
+	setImages: PropTypes.func.isRequired,
+	setSubmitted: PropTypes.func.isRequired,
+	setData: PropTypes.func.isRequired,
+	setGraph: PropTypes.func.isRequired,
+	setCode: PropTypes.func.isRequired,
+	setGood: PropTypes.func.isRequired,
+	setBad: PropTypes.func.isRequired,
+	setKeywords: PropTypes.func.isRequired,
+	setLoading: PropTypes.func.isRequired,
+};
+
+SiteLink.propTypes = {
+	setLinks: PropTypes.func.isRequired,
+	setImages: PropTypes.func.isRequired,
+	setSubmitted: PropTypes.func.isRequired,
+	setData: PropTypes.func.isRequired,
+	setGraph: PropTypes.func.isRequired,
+	setCode: PropTypes.func.isRequired,
+	setGood: PropTypes.func.isRequired,
+	setBad: PropTypes.func.isRequired,
+	setKeywords: PropTypes.func.isRequired,
+	setLoading: PropTypes.func.isRequired,
+};
+
+Upload.propTypes = {
+	setLinks: PropTypes.func.isRequired,
+	setImages: PropTypes.func.isRequired,
+	setSubmitted: PropTypes.func.isRequired,
+	setData: PropTypes.func.isRequired,
+	setGraph: PropTypes.func.isRequired,
+	setCode: PropTypes.func.isRequired,
+	setGood: PropTypes.func.isRequired,
+	setBad: PropTypes.func.isRequired,
+	setKeywords: PropTypes.func.isRequired,
+};
+
 const Container = Styled.div`
     padding: 12px;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     border-radius: 10px;
     background-color: white;
-    
 `;
 const Wrap = Styled.div`
     background: url("/assets/htm.png") no-repeat center center;
@@ -171,4 +289,4 @@ const Link = Styled.input`
     }
 `;
 
-export default Upload;
+export default memo(Upload);

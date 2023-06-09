@@ -5,9 +5,9 @@ import io
 import base64
 
 
-def create_html_tree():
+def create_html_tree(path):
     try:
-        file = open("templates/index.html", encoding="utf8")
+        file = open(path, encoding="utf8")
         html_content = file.read()
         soup = BeautifulSoup(html_content, 'html.parser')
         G = nx.DiGraph()
@@ -35,29 +35,12 @@ def create_html_tree():
         image_data = buffer.getvalue()
         buffer.close()
         base64_image = base64.b64encode(image_data).decode('utf-8')
-        image = f'''"data:image/png;base64,{base64_image}"'''
+        image = f'''data:image/png;base64,{base64_image}'''
+        file.close()
         return image
     except:
         print('Could not create tree')
         return None
 
 
-html_tree = create_html_tree()
-
-html_page = f'''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>HTML Tree Visualization</title>
-</head>
-<body>
-    <h1>HTML Tree Visualization</h1>
-    <img src="" alt="HTML Tree">
-</body>
-</html>
-'''
-
-file = open("templates/example.html", 'w', encoding="utf8")
-file.write(html_page)
-
-print(f"HTML tree visualization saved.")
+# print(create_html_tree("../templates/index.html"))

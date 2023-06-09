@@ -1,10 +1,12 @@
 import requests
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
-from flask_cors import CORS
-import extract
+from flask_cors import CORS, cross_origin
+from extract import data
 app = Flask(__name__)
-CORS(app)
+CORS(app, support_credentials=True)
+
+# fail = jsonify({"success": False, 'message': "fail"})
 
 
 def read_webpage(url):
@@ -18,40 +20,28 @@ def read_webpage(url):
         return e
 
 
-def data():
-    try:
-        images = extract.extract_images()
-        links = extract.extract_links()
-        text = extract.extract_text()
-        script = extract.extract_javascript()
-        graph = extract.create_html_tree()
-        return jsonify({
-            "success": True,
-            "message": "done",
-            "images": images,
-            "links": links,
-            "text": text,
-            "script": script,
-            "graph": graph
-        })
-    except Exception:
-        print("Error occurred while extracting")
-        return jsonify({
-            "success": False,
-            "message": "Error occurred while extracting"
-        })
-
-
 @app.route('/', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def display():
+    try:
+        return render_template('example.html')
+    except Exception:
+        print("Error occurred while rendering")
+        return jsonify({"success": False, 'message': "fail"})
+
+
+@app.route('/doc', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def displayDoc():
     try:
         return render_template('index.html')
     except Exception:
         print("Error occurred while rendering")
-        return Exception
+        return jsonify({"success": False, 'message': "fail"})
 
 
 @app.route('/api/file', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def uploadFile():
     try:
         if request.method == 'POST':
@@ -59,7 +49,7 @@ def uploadFile():
             print(f)
             f.save("templates/"+secure_filename('index.html'))
             print("file saved")
-            return data()
+            return jsonify(data())
         else:
             raise Exception
     except Exception:
@@ -67,6 +57,7 @@ def uploadFile():
 
 
 @app.route('/api/link', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def receiveLink():
     try:
         if request.method == 'POST':
@@ -75,7 +66,10 @@ def receiveLink():
             # print(content)
             file = open("templates/index.html", 'w', encoding="utf8")
             file.write(content)
-            return data()
+            print(link)
+            # print(file.read())
+            file.close()
+            return jsonify(data())
         else:
             raise Exception
     except Exception:
@@ -83,6 +77,7 @@ def receiveLink():
         return jsonify({"success": False, 'message': "fail"})
 
 # data()
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)

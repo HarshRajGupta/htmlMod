@@ -3,6 +3,13 @@
 	margin: 0;
 	box-sizing: border-box;
 	font-family: 'Roboto', sans-serif;
+	transition: all 0.2s ease-in-out;
+	scrollbar-width: none;
+}
+
+body,
+#root {
 	overflow: hidden;
-	transition: all .2s ease-in-out;
+	width: 100vw;
+	height: 100vh;
 }
