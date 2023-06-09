@@ -4,6 +4,6 @@ requests==2.31.0
 Werkzeug==2.2.3
 beautifulsoup4==4.12.2
 matplotlib==3.5.3
-networkx==3.1
+networkx==2.6.3
 urllib3==2.0.2
 nltk==3.8.1
