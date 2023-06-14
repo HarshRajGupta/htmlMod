@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import Styled from 'styled-components';
 import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
@@ -12,50 +12,32 @@ import {
 	Script,
 	Seo,
 } from './components';
+import { initialState, reducer } from './reducer';
 import 'react-toastify/dist/ReactToastify.css';
 
-axios.defaults.baseURL = 'https://html-mod-backend.onrender.com/api';
-// axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_APP_SERVER_URL;
 
 function App() {
-	const [submitted, setSubmitted] = useState(false);
-	const [images, setImages] = useState([]);
-	const [links, setLinks] = useState([]);
-	const [data, setData] = useState([]);
-	const [graph, setGraph] = useState([]);
-	const [code, setCode] = useState([]);
-	const [good, setGood] = useState([]);
-	const [bad, setBad] = useState([]);
-	const [keywords, setKeywords] = useState([]);
+	const [state, dispatch] = useReducer(reducer, initialState);
 	return (
 		<Container>
-			{submitted ? (
+			{state.submitted ? (
 				<>
 					<Page />
-					<Graph graph={graph} />
+					<Graph graph={state.graph} />
 					<Seo
-						good={good}
-						bad={bad}
-						keywords={keywords}
+						good={state.good}
+						bad={state.bad}
+						keywords={state.keywords}
 					/>
-					<Links links={links} />
-					<Images images={images} />
-					<Data data={data} />
-					<Script code={code} />
+					<Links links={state.links} />
+					<Images images={state.images} />
+					<Data data={state.data} />
+					<Script code={state.code} />
 				</>
 			) : (
 				<>
-					<Upload
-						setImages={setImages}
-						setLinks={setLinks}
-						setSubmitted={setSubmitted}
-						setData={setData}
-						setGraph={setGraph}
-						setCode={setCode}
-						setGood={setGood}
-						setBad={setBad}
-						setKeywords={setKeywords}
-					/>
+					<Upload dispatch={dispatch} />
 				</>
 			)}
 			<ToastContainer />

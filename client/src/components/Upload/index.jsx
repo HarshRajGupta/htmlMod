@@ -6,42 +6,33 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 
-function FileUpload({
-	setLinks,
-	setImages,
-	setSubmitted,
-	setData,
-	setGraph,
-	setCode,
-	setGood,
-	setBad,
-	setKeywords,
-	setLoading,
-}) {
+function FileUpload({ dispatch, setLoading }) {
 	const onDrop = useCallback((acceptedFiles) => {
+		if (acceptedFiles[0].type !== 'text/html') {
+			toast.error('Invalid File Type');
+			toast.info('Please Upload a HTML File');
+			setLoading(false);
+			return;
+		}
 		toast.info('Uploading File');
 		setLoading(true);
 		const formData = new FormData();
 		formData.append('file', acceptedFiles[0]);
 		axios
-			.post('/file', formData)
+			.post('/api/file', formData)
 			.then((res) => {
 				console.log(res);
-				setLinks(res.data.links);
-				setImages(res.data.images);
-				setData(res.data.text);
-				setGraph(res.data.graph);
-				setCode(res.data.script);
-				setGood(res.data.good);
-				setBad(res.data.bad);
-				setKeywords(res.data.keywords);
+				dispatch({
+					type: 'info-fetched',
+					payload: res.data,
+				});
 				toast.success('File Uploaded Successfully');
-				setSubmitted(true);
 			})
 			.catch((err) => {
+				toast.error('Error Uploading File');
+				setLoading(false);
 				console.error(err);
 			});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
@@ -79,18 +70,7 @@ function FileUpload({
 	);
 }
 
-function SiteLink({
-	setLinks,
-	setImages,
-	setSubmitted,
-	setData,
-	setGraph,
-	setCode,
-	setGood,
-	setBad,
-	setKeywords,
-	setLoading,
-}) {
+function SiteLink({ dispatch, setLoading }) {
 	const linkRef = useRef(null);
 	function handleSubmit(e) {
 		e.preventDefault();
@@ -99,21 +79,18 @@ function SiteLink({
 		const formData = new FormData();
 		formData.append('link', linkRef.current.value);
 		axios
-			.post('/link', formData)
+			.post('/api/link', formData)
 			.then((res) => {
 				console.log(res);
-				setLinks(res.data.links);
-				setImages(res.data.images);
-				setData(res.data.text);
-				setGraph(res.data.graph);
-				setCode(res.data.script);
-				setGood(res.data.good);
-				setBad(res.data.bad);
-				setKeywords(res.data.keywords);
+				dispatch({
+					type: 'info-fetched',
+					payload: res.data,
+				});
 				toast.success('Analysis Successful');
-				setSubmitted(true);
 			})
 			.catch((err) => {
+				toast.error('Error Analyzing Site');
+				setLoading(false);
 				console.error(err);
 			});
 	}
@@ -136,43 +113,17 @@ function SiteLink({
 	);
 }
 
-function Upload({
-	setLinks,
-	setImages,
-	setSubmitted,
-	setData,
-	setGraph,
-	setCode,
-	setGood,
-	setBad,
-	setKeywords,
-}) {
+function Upload({ dispatch }) {
 	const [loading, setLoading] = useState(false);
 	if (loading) return <h1>Loading...</h1>;
 	return (
 		<>
 			<FileUpload
-				setLinks={setLinks}
-				setImages={setImages}
-				setSubmitted={setSubmitted}
-				setData={setData}
-				setGraph={setGraph}
-				setCode={setCode}
-				setGood={setGood}
-				setBad={setBad}
-				setKeywords={setKeywords}
+				dispatch={dispatch}
 				setLoading={setLoading}
 			/>
 			<SiteLink
-				setLinks={setLinks}
-				setImages={setImages}
-				setSubmitted={setSubmitted}
-				setData={setData}
-				setGraph={setGraph}
-				setCode={setCode}
-				setGood={setGood}
-				setBad={setBad}
-				setKeywords={setKeywords}
+				dispatch={dispatch}
 				setLoading={setLoading}
 			/>
 		</>
@@ -180,41 +131,17 @@ function Upload({
 }
 
 FileUpload.propTypes = {
-	setLinks: PropTypes.func.isRequired,
-	setImages: PropTypes.func.isRequired,
-	setSubmitted: PropTypes.func.isRequired,
-	setData: PropTypes.func.isRequired,
-	setGraph: PropTypes.func.isRequired,
-	setCode: PropTypes.func.isRequired,
-	setGood: PropTypes.func.isRequired,
-	setBad: PropTypes.func.isRequired,
-	setKeywords: PropTypes.func.isRequired,
+	dispatch: PropTypes.func.isRequired,
 	setLoading: PropTypes.func.isRequired,
 };
 
 SiteLink.propTypes = {
-	setLinks: PropTypes.func.isRequired,
-	setImages: PropTypes.func.isRequired,
-	setSubmitted: PropTypes.func.isRequired,
-	setData: PropTypes.func.isRequired,
-	setGraph: PropTypes.func.isRequired,
-	setCode: PropTypes.func.isRequired,
-	setGood: PropTypes.func.isRequired,
-	setBad: PropTypes.func.isRequired,
-	setKeywords: PropTypes.func.isRequired,
+	dispatch: PropTypes.func.isRequired,
 	setLoading: PropTypes.func.isRequired,
 };
 
 Upload.propTypes = {
-	setLinks: PropTypes.func.isRequired,
-	setImages: PropTypes.func.isRequired,
-	setSubmitted: PropTypes.func.isRequired,
-	setData: PropTypes.func.isRequired,
-	setGraph: PropTypes.func.isRequired,
-	setCode: PropTypes.func.isRequired,
-	setGood: PropTypes.func.isRequired,
-	setBad: PropTypes.func.isRequired,
-	setKeywords: PropTypes.func.isRequired,
+	dispatch: PropTypes.func.isRequired,
 };
 
 const Container = Styled.div`
