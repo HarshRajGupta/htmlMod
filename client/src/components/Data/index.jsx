@@ -38,7 +38,7 @@ const Container = Styled.div`
     padding: 16px 24px;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     border-radius: 10px;
-    background-color: white;
+    background-color: rgba(255,255,255,0.8);
 	margin: 24px auto;
 	display: grid;
 	grid-template-columns: 1fr;
@@ -55,6 +55,6 @@ const Wrap = Styled.p`
 	padding: 8px;
 	margin: 4px auto;
 	word-break: break-all;
-`
+`;
 
 export default Data;

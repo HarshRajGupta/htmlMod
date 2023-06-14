@@ -46,8 +46,9 @@ function App() {
 }
 
 const Container = Styled.div`
-	background-color: whitesmoke;
-  	background-image: url("https://www.transparenttextures.com/patterns/lyonnette.png");
+  	background-image: url("/assets/background.png");
+	background-repeat: no-repeat;
+	background-size: cover;
 	height: 100vh;
 	display: grid;
   	justify-content:center;
