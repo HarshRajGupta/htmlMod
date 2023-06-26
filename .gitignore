@@ -26,3 +26,14 @@ dist-ssr
 yarn.lock
 package-lock.json
 __pycache__
+venv
+
+*.pyc
+__pycache__/
+*.class
+*.jar
+*.war
+*.exe
+*.dll
+
+.DS_Store
