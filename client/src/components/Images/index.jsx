@@ -19,6 +19,7 @@ function Image({ image }) {
 			<img
 				src={image[0]}
 				alt={image[1]}
+				loading="lazy"
 			/>
 		</Box>
 	);
