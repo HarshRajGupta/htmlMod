@@ -12,6 +12,7 @@ function Link({ link }) {
 				src={link[0]}
 				title={link[1]}
 				frameBorder={0}
+				loading="lazy"
 			/>
 			<Wrap>
 				<a
