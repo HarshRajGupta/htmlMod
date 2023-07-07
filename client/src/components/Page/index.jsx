@@ -5,7 +5,6 @@ function Page() {
 			<iframe
 				frameBorder={0}
 				src={`${import.meta.env.VITE_APP_SERVER_URL}/doc`}
-				loading="lazy"
 			></iframe>
 		</Container>
 	);
